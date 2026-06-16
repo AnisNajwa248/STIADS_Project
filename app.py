@@ -125,7 +125,7 @@ model, encoder = load_model()
 st.markdown("""
 <div class="header-banner">
     <h1>⚙️ Predictive Maintenance System</h1>
-    <p>AI4I 2020 Dataset &nbsp;|&nbsp; Random Forest Classifier &nbsp;|&nbsp; 98.85% Accuracy &nbsp;</p>
+    <p>AI4I 2020 Dataset &nbsp;|&nbsp; Random Forest Classifier &nbsp;|&nbsp; 98.85% Accuracy &nbsp;|&nbsp; MAXD 5213 Applied Data Science</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -172,7 +172,9 @@ with left_col:
 
         air_temp = st.slider("🌡️ Air Temperature (°C)", 20.0, 35.0, 26.0, 0.1)
         st.markdown("""<div class='range-note'>
-            📌 Normal range: 22°C – 31°C &nbsp;|&nbsp; Dataset avg: 26.85°C
+            ✅ Safe: &lt; 28°C &nbsp;|&nbsp;
+            🟡 Warning: 28–30°C &nbsp;|&nbsp;
+            🔴 Critical: &gt; 30°C &nbsp;|&nbsp; Dataset avg: 26.85°C
         </div>""", unsafe_allow_html=True)
 
     with col2:
@@ -184,15 +186,18 @@ with left_col:
 
         process_temp = st.slider("🌡️ Process Temperature (°C)", 30.0, 50.0, 36.0, 0.1)
         st.markdown("""<div class='range-note'>
-            📌 Normal range: 33°C – 44°C &nbsp;|&nbsp;
-            High process temp increases thermal stress
+            ✅ Safe: &lt; 38°C &nbsp;|&nbsp;
+            🟡 Warning: 38–42°C &nbsp;|&nbsp;
+            🔴 Critical: &gt; 42°C &nbsp;|&nbsp; High temp increases thermal stress
         </div>""", unsafe_allow_html=True)
 
         temp_diff = process_temp - air_temp
         st.metric("🔁 Temp Difference (auto)", f"{temp_diff:.1f} °C",
                   help="Process Temp minus Air Temp — calculated automatically")
         st.markdown("""<div class='range-note'>
-            📌 Large difference indicates thermal stress &nbsp;|&nbsp; Typical: 8–12°C
+            ✅ Safe: &lt; 10°C &nbsp;|&nbsp;
+            🟡 Warning: 10–12°C &nbsp;|&nbsp;
+            🔴 Critical: &gt; 12°C &nbsp;|&nbsp; Large difference indicates thermal stress
         </div>""", unsafe_allow_html=True)
 
     st.divider()
@@ -237,21 +242,21 @@ with right_col:
         </tr>
         <tr>
             <td>Air Temp</td>
-            <td>🟢 22–31°C</td>
-            <td>🟡 31–35°C</td>
-            <td>🔴 &gt; 35°C</td>
+            <td>🟢 &lt; 28°C</td>
+            <td>🟡 28–30°C</td>
+            <td>🔴 &gt; 30°C</td>
         </tr>
         <tr>
             <td>Process Temp</td>
-            <td>🟢 33–44°C</td>
-            <td>🟡 44–48°C</td>
-            <td>🔴 &gt; 48°C</td>
+            <td>🟢 &lt; 38°C</td>
+            <td>🟡 38–42°C</td>
+            <td>🔴 &gt; 42°C</td>
         </tr>
         <tr>
             <td>Temp Diff</td>
-            <td>🟢 8–12°C</td>
-            <td>🟡 12–15°C</td>
-            <td>🔴 &gt; 15°C</td>
+            <td>🟢 &lt; 10°C</td>
+            <td>🟡 10–12°C</td>
+            <td>🔴 &gt; 12°C</td>
         </tr>
     </table>
     """, unsafe_allow_html=True)
@@ -355,9 +360,12 @@ with right_col:
                 "🔴 Critical"  if tool_wear > 200 else
                 "🟡 Elevated"  if tool_wear > 150 else "✅ Normal",
                 "✅ Normal"    if 1168 < rpm < 2886 else "⚠️ Abnormal",
-                "✅ Normal"    if air_temp <= 31 else "⚠️ Elevated",
-                "✅ Normal"    if process_temp <= 44 else "⚠️ Elevated",
-                "✅ Normal"    if temp_diff <= 12 else "⚠️ High Diff"
+                "✅ Normal"    if air_temp <= 28 else
+                "🟡 Warning"   if air_temp <= 30 else "🔴 Critical",
+                "✅ Normal"    if process_temp <= 38 else
+                "🟡 Warning"   if process_temp <= 42 else "🔴 Critical",
+                "✅ Normal"    if temp_diff <= 10 else
+                "🟡 Warning"   if temp_diff <= 12 else "🔴 Critical"
             ]
         })
         st.dataframe(summary, use_container_width=True, hide_index=True)
